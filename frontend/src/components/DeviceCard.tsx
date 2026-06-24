@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 import { DashboardDevice } from '../types/app';
 
@@ -22,19 +23,22 @@ export default function DeviceCard({ compact = false, device, onEdit, onOpen, on
   const hasActions = Boolean(onEdit || onToggleMonitoring);
 
   return (
-    <TouchableOpacity activeOpacity={0.92} onPress={onOpen} style={styles.card}>
+    <TouchableOpacity activeOpacity={0.75} onPress={onOpen} style={styles.card}>
       <View style={styles.topRow}>
         <View style={styles.titleGroup}>
           <View style={styles.deviceIconRow}>
-            <View style={styles.deviceIconBadge}>
-              <Text style={styles.deviceIconText}>IOT</Text>
+            <View style={[styles.deviceIconBadge, { backgroundColor: isMonitored ? '#0c1f3a' : '#111827', borderColor: isMonitored ? '#1e3a5f' : '#1f2937' }]}>
+              <Feather name="cpu" size={14} color={isMonitored ? '#38bdf8' : '#4b5563'} />
             </View>
             <Text numberOfLines={1} style={styles.title}>{device.nombre}</Text>
           </View>
-          <Text numberOfLines={1} style={styles.subtitle}>{device.tipo} | {device.ubicacion}</Text>
+          <Text numberOfLines={1} style={styles.subtitle}>{device.tipo} · {device.ubicacion}</Text>
         </View>
         <View style={[styles.statePill, isMonitored ? styles.stateOn : styles.stateOff]}>
-          <Text style={styles.stateLabel}>{isMonitored ? 'Activo' : 'Inactivo'}</Text>
+          <View style={[styles.stateDot, { backgroundColor: isMonitored ? '#22c55e' : '#4b5563' }]} />
+          <Text style={[styles.stateLabel, { color: isMonitored ? '#86efac' : '#9ca3af' }]}>
+            {isMonitored ? 'Activo' : 'Inactivo'}
+          </Text>
         </View>
       </View>
 
@@ -49,12 +53,12 @@ export default function DeviceCard({ compact = false, device, onEdit, onOpen, on
         </View>
         <View style={styles.metricBlock}>
           <Text style={styles.metricLabel}>Alertas</Text>
-          <Text style={styles.metricValue}>{device.alertasActivas}</Text>
+          <Text style={[styles.metricValue, device.alertasActivas > 0 && { color: '#f87171' }]}>{device.alertasActivas}</Text>
         </View>
         {!compact ? (
           <View style={styles.metricBlock}>
             <Text style={styles.metricLabel}>Sync</Text>
-            <Text style={styles.metricValue}>{device.pendingSync ? 'Pendiente' : 'OK'}</Text>
+            <Text style={[styles.metricValue, device.pendingSync && { color: '#fbbf24' }]}>{device.pendingSync ? 'Pendiente' : 'OK'}</Text>
           </View>
         ) : null}
       </View>
@@ -62,12 +66,14 @@ export default function DeviceCard({ compact = false, device, onEdit, onOpen, on
       {hasActions ? (
         <View style={styles.actionsRow}>
           {onToggleMonitoring ? (
-            <TouchableOpacity onPress={onToggleMonitoring} style={styles.secondaryButton}>
+            <TouchableOpacity activeOpacity={0.7} onPress={onToggleMonitoring} style={styles.secondaryButton}>
+              <Feather name={isMonitored ? 'pause-circle' : 'play-circle'} size={14} color="#94a3b8" />
               <Text style={styles.secondaryButtonText}>{isMonitored ? 'Pausar' : 'Activar'}</Text>
             </TouchableOpacity>
           ) : null}
           {onEdit ? (
-            <TouchableOpacity onPress={onEdit} style={styles.primaryButton}>
+            <TouchableOpacity activeOpacity={0.7} onPress={onEdit} style={styles.primaryButton}>
+              <Feather name="edit-2" size={14} color="#f8fafc" />
               <Text style={styles.primaryButtonText}>Editar</Text>
             </TouchableOpacity>
           ) : null}
@@ -80,54 +86,75 @@ export default function DeviceCard({ compact = false, device, onEdit, onOpen, on
 const styles = StyleSheet.create({
   actionsRow: { flexDirection: 'row', gap: 10, marginTop: 16 },
   card: {
-    backgroundColor: '#091724',
-    borderColor: '#173243',
+    backgroundColor: '#111827', // gray-900
+    borderColor: '#1f2937', // gray-800
     borderRadius: 16,
     borderWidth: 1,
     padding: 18,
   },
   deviceIconBadge: {
     alignItems: 'center',
-    backgroundColor: '#0d2d42',
-    borderColor: '#1f5672',
     borderRadius: 10,
     borderWidth: 1,
-    height: 30,
+    height: 32,
     justifyContent: 'center',
-    width: 38,
+    width: 32,
   },
   deviceIconRow: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10,
   },
-  deviceIconText: {
-    color: '#7dd3fc',
-    fontSize: 9,
-    fontWeight: '900',
-  },
   metricBlock: { flex: 1, minWidth: 68 },
-  metricLabel: { color: '#7f95ab', fontSize: 11, fontWeight: '800', textTransform: 'uppercase' },
-  metricValue: { color: '#eef6fb', fontSize: 16, fontWeight: '900', marginTop: 6 },
+  metricLabel: { color: '#6b7280', fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+  metricValue: { color: '#f9fafb', fontSize: 16, fontWeight: '700', marginTop: 5 },
   metricsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 18 },
-  primaryButton: { alignItems: 'center', backgroundColor: '#0ea5e9', borderRadius: 12, flex: 1, paddingVertical: 12 },
-  primaryButtonText: { color: '#f8fafc', fontWeight: '900' },
+  primaryButton: { 
+    alignItems: 'center', 
+    backgroundColor: '#0ea5e9', 
+    borderRadius: 12, 
+    flex: 1, 
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
+    paddingVertical: 12,
+  },
+  primaryButtonText: { color: '#f8fafc', fontWeight: '700' },
   secondaryButton: {
     alignItems: 'center',
-    backgroundColor: '#102b3d',
-    borderColor: '#1e4a64',
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
     borderRadius: 12,
     borderWidth: 1,
     flex: 1,
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'center',
     paddingVertical: 12,
   },
-  secondaryButtonText: { color: '#d3e8f5', fontWeight: '900' },
-  stateLabel: { color: '#eff6ff', fontSize: 11, fontWeight: '900' },
-  stateOff: { backgroundColor: '#334155' },
-  stateOn: { backgroundColor: '#15803d' },
-  statePill: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7 },
-  subtitle: { color: '#85a0b6', marginTop: 5 },
-  title: { color: '#f8fafc', fontSize: 18, fontWeight: '900' },
+  secondaryButtonText: { color: '#94a3b8', fontWeight: '700' },
+  stateLabel: { fontSize: 11, fontWeight: '700' },
+  stateDot: { borderRadius: 999, height: 6, width: 6 },
+  stateOff: { 
+    backgroundColor: '#1f2937', 
+    borderRadius: 999, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10, 
+    paddingVertical: 6, 
+  },
+  stateOn: { 
+    backgroundColor: '#052e16', 
+    borderRadius: 999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10, 
+    paddingVertical: 6,
+  },
+  subtitle: { color: '#6b7280', fontSize: 12, marginTop: 5 },
+  title: { color: '#f9fafb', fontSize: 17, fontWeight: '700' },
   titleGroup: { flex: 1, paddingRight: 12 },
   topRow: { alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between' },
 });

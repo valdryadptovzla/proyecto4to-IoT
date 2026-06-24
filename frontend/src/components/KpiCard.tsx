@@ -1,33 +1,45 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 interface KpiCardProps {
   accentColor: string;
-  icon: string;
+  icon: keyof typeof Feather.glyphMap;
   label: string;
   secondary?: string;
   value: string;
 }
 
 export default function KpiCard({ accentColor, icon, label, secondary, value }: KpiCardProps) {
+  const scaleAnim = useRef(new Animated.Value(0.92)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 7, tension: 80, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
   return (
-    <View style={[styles.card, { borderColor: accentColor }]}>
+    <Animated.View style={[styles.card, { borderColor: `${accentColor}55`, opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
       <View style={styles.topRow}>
-        <View style={[styles.iconBadge, { backgroundColor: `${accentColor}22`, borderColor: accentColor }]}>
-          <Text style={[styles.icon, { color: accentColor }]}>{icon}</Text>
+        <View style={[styles.iconBadge, { backgroundColor: `${accentColor}18`, borderColor: `${accentColor}44` }]}>
+          <Feather name={icon} size={18} color={accentColor} />
         </View>
-        <View style={[styles.statusDot, { backgroundColor: accentColor }]} />
+        <View style={[styles.statusDot, { backgroundColor: accentColor, shadowColor: accentColor }]} />
       </View>
       <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.value, { color: '#f8fafc' }]}>{value}</Text>
       {secondary ? <Text style={styles.secondary}>{secondary}</Text> : null}
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#091724',
-    borderRadius: 18,
+    backgroundColor: '#111827', // gray-900
+    borderRadius: 20,
     borderWidth: 1,
     flex: 1,
     minWidth: 160,
@@ -38,37 +50,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 14,
     borderWidth: 1,
-    height: 46,
+    height: 44,
     justifyContent: 'center',
-    minWidth: 52,
-    paddingHorizontal: 10,
-  },
-  icon: {
-    fontSize: 14,
-    fontWeight: '900',
+    width: 44,
   },
   label: {
-    color: '#9fb4c8',
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 0.4,
+    color: '#6b7280', // gray-500
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
+    marginTop: 2,
   },
   secondary: {
-    color: '#6b879d',
+    color: '#4b5563', // gray-600
     fontSize: 12,
     marginTop: 8,
   },
   value: {
-    color: '#f8fafc',
-    fontSize: 26,
-    fontWeight: '900',
-    marginTop: 8,
+    color: '#f9fafb',
+    fontSize: 28,
+    fontWeight: '800',
+    marginTop: 6,
+    letterSpacing: -0.5,
   },
   statusDot: {
     borderRadius: 999,
-    height: 9,
-    width: 9,
+    height: 8,
+    width: 8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 6,
   },
   topRow: {
     alignItems: 'center',

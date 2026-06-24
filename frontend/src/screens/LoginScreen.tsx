@@ -14,6 +14,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 
 import { RememberedLogin } from '../types/app';
 
@@ -77,7 +78,7 @@ export default function LoginScreen({
             <View style={styles.card}>
               <View style={styles.cardTopRow}>
                 <View style={styles.formMark}>
-                  <Text style={styles.formMarkText}>GE</Text>
+                  <Feather name="zap" size={22} color="#38bdf8" />
                 </View>
                 <View style={styles.formCopy}>
                   <Text style={styles.cardEyebrow}>Acceso seguro</Text>
@@ -122,7 +123,7 @@ export default function LoginScreen({
               <View style={styles.optionsRow}>
                 <TouchableOpacity onPress={() => setRemember((value) => !value)} style={styles.rememberRow}>
                   <View style={[styles.checkbox, remember && styles.checkboxChecked]}>
-                    {remember ? <Text style={styles.checkText}>OK</Text> : null}
+                    {remember ? <Feather name="check" size={13} color="#f8fafc" /> : null}
                   </View>
                   <Text style={styles.rememberLabel}>Recordar acceso</Text>
                 </TouchableOpacity>
@@ -142,7 +143,7 @@ export default function LoginScreen({
 
             <View style={styles.hero}>
               <View style={styles.brandMark}>
-                <Text style={styles.brandMarkText}>GE</Text>
+                <Feather name="zap" size={28} color="#f8fafc" />
               </View>
               <Text style={styles.eyebrow}>Monitoreo energetico IoT</Text>
               <Text style={styles.title}>Panel inteligente de energia</Text>
@@ -152,17 +153,17 @@ export default function LoginScreen({
 
               <View style={styles.signalGrid}>
                 <View style={styles.signalCard}>
-                  <Text style={styles.signalIcon}>LIVE</Text>
+                  <Feather name="activity" size={18} color="#38bdf8" />
                   <Text style={styles.signalValue}>24/7</Text>
                   <Text style={styles.signalLabel}>Monitoreo</Text>
                 </View>
                 <View style={styles.signalCard}>
-                  <Text style={styles.signalIcon}>IOT</Text>
+                  <Feather name="cpu" size={18} color="#38bdf8" />
                   <Text style={styles.signalValue}>IoT</Text>
                   <Text style={styles.signalLabel}>Dispositivos</Text>
                 </View>
                 <View style={styles.signalCard}>
-                  <Text style={styles.signalIcon}>PWR</Text>
+                  <Feather name="trending-up" size={18} color="#38bdf8" />
                   <Text style={styles.signalValue}>kWh</Text>
                   <Text style={styles.signalLabel}>Analitica</Text>
                 </View>
@@ -178,9 +179,9 @@ export default function LoginScreen({
 const styles = StyleSheet.create({
   brandMark: {
     alignItems: 'center',
-    backgroundColor: '#16a8e8',
-    borderColor: 'rgba(125, 211, 252, 0.45)',
-    borderRadius: 18,
+    backgroundColor: '#0284c7',
+    borderColor: 'rgba(56,189,248,0.3)',
+    borderRadius: 20,
     borderWidth: 1,
     height: 66,
     justifyContent: 'center',
@@ -188,23 +189,23 @@ const styles = StyleSheet.create({
   },
   brandMarkText: { color: '#f8fafc', fontSize: 19, fontWeight: '900' },
   card: {
-    backgroundColor: 'rgba(9, 23, 36, 0.98)',
-    borderColor: '#1f4259',
+    backgroundColor: '#111827',
+    borderColor: '#1f2937',
     borderRadius: 22,
     borderWidth: 1,
     maxWidth: 460,
     padding: 28,
     width: '100%',
   },
-  cardEyebrow: { color: '#38bdf8', fontSize: 12, fontWeight: '900', textTransform: 'uppercase' },
-  cardSubtitle: { color: '#93aabe', fontSize: 14, lineHeight: 20, marginTop: 16 },
-  cardTitle: { color: '#f8fafc', fontSize: 30, fontWeight: '900', marginTop: 3 },
+  cardEyebrow: { color: '#38bdf8', fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.8 },
+  cardSubtitle: { color: '#6b7280', fontSize: 14, lineHeight: 20, marginTop: 16 },
+  cardTitle: { color: '#f9fafb', fontSize: 28, fontWeight: '800', marginTop: 3, letterSpacing: -0.5 },
   cardTopRow: { alignItems: 'center', flexDirection: 'row', gap: 14 },
   checkText: { color: '#f8fafc', fontSize: 9, fontWeight: '900' },
   checkbox: {
     alignItems: 'center',
-    backgroundColor: '#0f2940',
-    borderColor: '#214e6a',
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
     borderRadius: 8,
     borderWidth: 1,
     height: 24,
@@ -215,56 +216,56 @@ const styles = StyleSheet.create({
   checkboxChecked: { backgroundColor: '#16a34a', borderColor: '#22c55e' },
   content: { flexGrow: 1, justifyContent: 'center', padding: 18 },
   contentWide: { alignItems: 'center', justifyContent: 'center' },
-  eyebrow: { color: '#38bdf8', fontSize: 12, fontWeight: '900', marginTop: 22, textTransform: 'uppercase' },
+  eyebrow: { color: '#38bdf8', fontSize: 11, fontWeight: '800', marginTop: 22, textTransform: 'uppercase', letterSpacing: 0.8 },
   fieldGroup: { marginTop: 20 },
   formCopy: { flex: 1 },
   formMark: {
     alignItems: 'center',
-    backgroundColor: '#0d2d42',
-    borderColor: '#1f5672',
+    backgroundColor: '#0f172a',
+    borderColor: '#1e293b',
     borderRadius: 14,
     borderWidth: 1,
     height: 52,
     justifyContent: 'center',
     width: 52,
   },
-  formMarkText: { color: '#7dd3fc', fontSize: 15, fontWeight: '900' },
+  formMarkText: { color: '#38bdf8', fontSize: 15, fontWeight: '900' },
   hero: { flex: 1, gap: 2, maxWidth: 520 },
   input: {
-    backgroundColor: '#081826',
-    borderColor: '#1b3f55',
+    backgroundColor: '#0f172a',
+    borderColor: '#1e293b',
     borderRadius: 13,
     borderWidth: 1,
-    color: '#f8fafc',
+    color: '#f9fafb',
     fontSize: 16,
     marginTop: 8,
     minHeight: 54,
     paddingHorizontal: 15,
   },
   keyboard: { flex: 1 },
-  label: { color: '#a6bfd0', fontSize: 13, fontWeight: '900' },
+  label: { color: '#9ca3af', fontSize: 13, fontWeight: '700' },
   optionsRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 18 },
-  passwordInput: { color: '#f8fafc', flex: 1, fontSize: 16, minHeight: 54, paddingHorizontal: 15 },
+  passwordInput: { color: '#f9fafb', flex: 1, fontSize: 16, minHeight: 54, paddingHorizontal: 15 },
   passwordShell: {
     alignItems: 'center',
-    backgroundColor: '#081826',
-    borderColor: '#1b3f55',
+    backgroundColor: '#0f172a',
+    borderColor: '#1e293b',
     borderRadius: 13,
     borderWidth: 1,
     flexDirection: 'row',
     marginTop: 8,
   },
-  rememberLabel: { color: '#c3d8e7', fontSize: 13, fontWeight: '700' },
+  rememberLabel: { color: '#d1d5db', fontSize: 13, fontWeight: '600' },
   rememberRow: { alignItems: 'center', flexDirection: 'row' },
-  roleHint: { color: '#7892a5', fontSize: 12, fontWeight: '800' },
-  safeArea: { backgroundColor: '#050b12', flex: 1 },
-  securityNote: { color: '#7892a5', fontSize: 12, lineHeight: 18, marginTop: 16, textAlign: 'center' },
+  roleHint: { color: '#6b7280', fontSize: 12, fontWeight: '600' },
+  safeArea: { backgroundColor: '#030712', flex: 1 },
+  securityNote: { color: '#6b7280', fontSize: 12, lineHeight: 18, marginTop: 16, textAlign: 'center' },
   shell: { alignSelf: 'center', maxWidth: 460, width: '100%' },
   shellWide: { alignItems: 'center', flexDirection: 'row', gap: 64, maxWidth: 1120 },
   showButton: {
     alignItems: 'center',
-    backgroundColor: '#102b3d',
-    borderColor: '#1e4a64',
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
     borderRadius: 10,
     borderWidth: 1,
     justifyContent: 'center',
@@ -272,29 +273,30 @@ const styles = StyleSheet.create({
     minHeight: 38,
     paddingHorizontal: 13,
   },
-  showButtonText: { color: '#d3e8f5', fontSize: 12, fontWeight: '900' },
+  showButtonText: { color: '#d1d5db', fontSize: 12, fontWeight: '700' },
   signalCard: {
-    backgroundColor: '#0a1e2e',
-    borderColor: '#1d4056',
+    backgroundColor: '#111827',
+    borderColor: '#1f2937',
     borderRadius: 16,
     borderWidth: 1,
+    gap: 6,
     minWidth: 112,
-    padding: 15,
+    padding: 16,
   },
   signalGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 28 },
   signalIcon: { color: '#38bdf8', fontSize: 10, fontWeight: '900' },
-  signalLabel: { color: '#89a5b7', fontSize: 12, marginTop: 4 },
-  signalValue: { color: '#86efac', fontSize: 24, fontWeight: '900', marginTop: 6 },
+  signalLabel: { color: '#6b7280', fontSize: 12, marginTop: 2 },
+  signalValue: { color: '#86efac', fontSize: 24, fontWeight: '800', letterSpacing: -0.5 },
   submitButton: {
     alignItems: 'center',
-    backgroundColor: '#16a8e8',
+    backgroundColor: '#0284c7',
     borderRadius: 14,
     justifyContent: 'center',
     marginTop: 24,
     minHeight: 56,
   },
-  submitButtonDisabled: { opacity: 0.7 },
-  submitLabel: { color: '#f8fafc', fontSize: 15, fontWeight: '900' },
-  subtitle: { color: '#9bb2c4', fontSize: 16, lineHeight: 24, marginTop: 14, maxWidth: 490 },
-  title: { color: '#f8fafc', fontSize: 44, fontWeight: '900', lineHeight: 50, marginTop: 9 },
+  submitButtonDisabled: { opacity: 0.5 },
+  submitLabel: { color: '#f8fafc', fontSize: 15, fontWeight: '700' },
+  subtitle: { color: '#6b7280', fontSize: 16, lineHeight: 24, marginTop: 14, maxWidth: 490 },
+  title: { color: '#f9fafb', fontSize: 44, fontWeight: '800', lineHeight: 50, marginTop: 9, letterSpacing: -1.5 },
 });

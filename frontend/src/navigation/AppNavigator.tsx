@@ -36,9 +36,9 @@ const navigationTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: '#050b12',
-    border: '#173243',
-    card: '#091724',
+    background: '#030712',
+    border: '#1f2937',
+    card: '#111827',
     primary: '#38bdf8',
     text: '#f8fafc',
   },
@@ -49,58 +49,27 @@ function DashboardTabScreen({ navigation }: { navigation: any }) {
   const isAdmin = app.user?.rol === 'admin';
 
   const handleGeneratePdf = async () => {
-    if (!app.user) return;
+    if (!app.user || !isAdmin) return;
 
     try {
-      const { generateReportPDF, DEFAULT_COMPANY_INFO } = await import('../services/pdfService');
-      const consumos = app.dispositivos.map((device) => device.consumoActual);
-      const pico = consumos.length ? Math.max(...consumos) : 0;
-      const promedio = consumos.length ? app.totalConsumo / consumos.length : 0;
-      const reportData = {
-        title: 'REPORTE DE CONSUMO ENERGETICO',
-        generatedAt: new Date().toLocaleString('es-VE'),
-        userName: app.user.nombre_completo || app.user.username,
-        consumoResumen: `${app.totalConsumo.toFixed(0)} W`,
-        consumoPromedio: `${promedio.toFixed(0)} W`,
-        consumoPico: `${pico.toFixed(0)} W`,
-        totalDispositivos: app.dispositivos.length,
-        totalAlertas: app.alertas.length,
-        rows: app.dispositivos.map((device) => ({
-          equipo: device.nombre,
-          tipo: device.tipo,
-          ubicacion: device.ubicacion,
-          consumo: `${device.consumoActual.toFixed(0)} W`,
-          estado: device.estado === 'encendido' ? 'Activo' : 'Inactivo',
-          alertas: device.alertasActivas,
-          fecha: device.ultimaLectura ? new Date(device.ultimaLectura).toLocaleDateString('es-VE') : '',
-        })),
-        alertRows: app.alertas.slice(0, 10).map((alerta) => ({
-          nivel: alerta.nivel,
-          mensaje: alerta.mensaje,
-          fecha: alerta.fecha ? new Date(alerta.fecha).toLocaleString('es-VE') : '-',
-        })),
-        conclusions: '',
-      };
-
-      await generateReportPDF(
-        reportData,
-        { ...DEFAULT_COMPANY_INFO, logoAssetModule: require('../../assets/icon.png') },
-        { name: reportData.userName },
-        { preview: true, fileName: 'reporte_dashboard' }
-      );
-
-      if (isAdmin) {
-        await app.registerAuditEvent({
-          accion: 'pdf_generado',
-          descripcion: 'El administrador genero un reporte PDF desde el dashboard.',
-          detalles: {
-            alertas: app.alertas.length,
-            dispositivos: app.dispositivos.length,
-            eventos_auditoria: app.auditTrail.length,
-          },
-          entidad: 'reporte',
-        });
-      }
+      await openAdminReport({
+        alerts: app.alertas,
+        auditTrail: app.auditTrail,
+        devices: app.dispositivos,
+        user: app.user,
+      });
+      Alert.alert('PDF listo', 'Se abrio la vista de impresion del navegador.');
+      await app.registerAuditEvent({
+        accion: 'pdf_generado',
+        descripcion: 'El administrador genero un reporte PDF desde el dashboard.',
+        detalles: {
+          alertas: app.alertas.length,
+          dispositivos: app.dispositivos.length,
+          eventos_auditoria: app.auditTrail.length,
+          origen: 'dashboard',
+        },
+        entidad: 'reporte',
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'No se pudo generar el PDF.';
       Alert.alert('Error', message);
