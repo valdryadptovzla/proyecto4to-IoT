@@ -1,27 +1,9 @@
 import uuid
 from datetime import datetime
-from typing import Mapping
-
-from fastapi import HTTPException
 
 from ..database import auditoria_collection
 from ..models.auditoria import AuditActor, AuditEventResponse
 
-
-def build_actor(headers: Mapping[str, str], fallback_username: str = "sistema") -> AuditActor:
-    username = headers.get("x-username") or fallback_username
-    return AuditActor(
-        user_id=headers.get("x-user-id"),
-        username=username,
-        rol=headers.get("x-user-role") or "anonimo",
-    )
-
-
-def require_admin(headers: Mapping[str, str]) -> AuditActor:
-    actor = build_actor(headers)
-    if actor.rol != "admin":
-        raise HTTPException(status_code=403, detail="Solo el admin puede acceder a auditoría")
-    return actor
 
 
 def serialize_audit_event(document: dict) -> AuditEventResponse:

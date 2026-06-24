@@ -2,6 +2,9 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from .database import usuarios_collection
 from pymongo.errors import DuplicateKeyError
@@ -13,13 +16,26 @@ from .routers.usuarios import router as usuarios_router
 from .services.password_service import hash_password
 
 
+# ---------------------------------------------------------------------------
+# Rate Limiter – shared instance used by routers via app.state.limiter
+# ---------------------------------------------------------------------------
+limiter = Limiter(key_func=get_remote_address, default_limits=["120/minute"])
+
+
 app = FastAPI(
     title="Sistema de Gestion Energetica",
     description="API para monitoreo y optimizacion del consumo electrico en oficinas.",
     version="1.0.0",
 )
 
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+# Attach limiter to app so routers can access it via request.app.state.limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# ---------------------------------------------------------------------------
+# CORS – only allow known origins (configurable via .env)
+# ---------------------------------------------------------------------------
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:8081").split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,20 +46,26 @@ app.add_middleware(
 )
 
 
+# ---------------------------------------------------------------------------
+# Default users — created on first startup if they don't exist yet.
+# Credentials:
+#   Admin:   energiadmin / Energia@2026!
+#   Usuario: operador    / Monitor#IoT24
+# ---------------------------------------------------------------------------
 def ensure_default_user() -> None:
     default_users = [
         {
             "_id": "admin",
-            "username": "admin",
-            "password_hash": hash_password("admin"),
+            "username": "energiadmin",
+            "password_hash": hash_password("Energia@2026!"),
             "nombre_completo": "Administrador del Sistema",
             "rol": "admin",
         },
         {
             "_id": "usuario-demo",
-            "username": "usuario",
-            "password_hash": hash_password("usuario123"),
-            "nombre_completo": "Usuario Operativo",
+            "username": "operador",
+            "password_hash": hash_password("Monitor#IoT24"),
+            "nombre_completo": "Operador de Monitoreo",
             "rol": "usuario",
         },
     ]

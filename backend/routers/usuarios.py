@@ -3,6 +3,8 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request
 from pymongo.errors import DuplicateKeyError
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from ..database import usuarios_collection
 from ..models.usuario import (
@@ -165,8 +167,12 @@ def eliminar_usuario(usuario_id: str, request: Request) -> dict[str, str]:
     }
 
 
+limiter = Limiter(key_func=get_remote_address)
+
+
 @router.post("/login")
-def login(payload: LoginRequest) -> dict[str, object]:
+@limiter.limit("5/minute")
+def login(payload: LoginRequest, request: Request) -> dict[str, object]:
     user = usuarios_collection.find_one(
         {"$or": [{"username": payload.username}, {"usuario": payload.username}]}
     )

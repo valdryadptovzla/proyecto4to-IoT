@@ -2,7 +2,7 @@ import { DarkTheme, NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Alert } from 'react-native';
-import { ActivityIndicator, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import SidebarTabBar from '../components/SidebarTabBar';
@@ -270,6 +270,7 @@ function MainTabs() {
         />
       )}
       screenOptions={{
+        freezeOnBlur: Platform.OS === 'web' ? false : undefined,
         headerShown: false,
         sceneStyle: styles.scene,
         tabBarPosition: isDesktop ? 'left' : 'bottom',
@@ -365,7 +366,7 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer theme={navigationTheme}>
-      <RootStack.Navigator screenOptions={{ animation: 'slide_from_right', headerShown: false }}>
+      <RootStack.Navigator screenOptions={{ animation: Platform.OS === 'web' ? 'none' : 'slide_from_right', headerShown: false }}>
         {!app.user ? (
           <RootStack.Screen name="Login" component={LoginStackScreen} />
         ) : (
