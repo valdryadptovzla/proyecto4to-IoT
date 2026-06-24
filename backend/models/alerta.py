@@ -13,6 +13,11 @@ class AlertaCreate(BaseModel):
     nivel: NivelAlerta = "advertencia"
 
 
+class AlertaUpdate(BaseModel):
+    mensaje: str | None = Field(None, min_length=5, max_length=250)
+    nivel: NivelAlerta | None = None
+
+
 class AlertaResponse(AlertaCreate):
     id: str
-    fecha_registro: datetime
+    fecha: datetime | None = None

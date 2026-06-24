@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 
-from models.consumo import ConsumoCreate
+from ..models.consumo import ConsumoCreate
 
 
 ALERT_THRESHOLD_WATTS = float(os.getenv("ALERT_THRESHOLD_WATTS", "1000"))

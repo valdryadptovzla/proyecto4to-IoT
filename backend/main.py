@@ -1,14 +1,16 @@
-import hashlib
 import os
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import usuarios_collection
-from models.usuario import LoginRequest
-from routers.alertas import router as alertas_router
-from routers.consumo import router as consumo_router
-from routers.dispositivos import router as dispositivos_router
+from .database import usuarios_collection
+from pymongo.errors import DuplicateKeyError
+from .routers.alertas import router as alertas_router
+from .routers.auditoria import router as auditoria_router
+from .routers.consumo import router as consumo_router
+from .routers.dispositivos import router as dispositivos_router
+from .routers.usuarios import router as usuarios_router
+from .services.password_service import hash_password
 
 
 app = FastAPI(
@@ -28,23 +30,32 @@ app.add_middleware(
 )
 
 
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
-
 def ensure_default_user() -> None:
-    if usuarios_collection.count_documents({}) > 0:
-        return
-
-    usuarios_collection.insert_one(
+    default_users = [
         {
             "_id": "admin",
             "username": "admin",
-            "password_hash": hash_password("admin123"),
+            "password_hash": hash_password("admin"),
             "nombre_completo": "Administrador del Sistema",
             "rol": "admin",
-        }
-    )
+        },
+        {
+            "_id": "usuario-demo",
+            "username": "usuario",
+            "password_hash": hash_password("usuario123"),
+            "nombre_completo": "Usuario Operativo",
+            "rol": "usuario",
+        },
+    ]
+
+    for default_user in default_users:
+        if usuarios_collection.find_one({"_id": default_user["_id"]}):
+            continue
+        try:
+            usuarios_collection.insert_one(default_user)
+        except DuplicateKeyError:
+            # Ignore if unique index (e.g. on email) prevents insertion
+            continue
 
 
 @app.on_event("startup")
@@ -57,23 +68,8 @@ def root() -> dict[str, str]:
     return {"message": "API de gestion energetica operativa"}
 
 
-@app.post("/login")
-def login(payload: LoginRequest) -> dict[str, object]:
-    user = usuarios_collection.find_one({"username": payload.username})
-    if not user or user.get("password_hash") != hash_password(payload.password):
-        raise HTTPException(status_code=401, detail="Credenciales invalidas")
-
-    return {
-        "message": "Login exitoso",
-        "usuario": {
-            "id": user["_id"],
-            "username": user["username"],
-            "nombre_completo": user.get("nombre_completo"),
-            "rol": user.get("rol", "operador"),
-        },
-    }
-
-
+app.include_router(usuarios_router)
 app.include_router(dispositivos_router)
 app.include_router(consumo_router)
 app.include_router(alertas_router)
+app.include_router(auditoria_router)

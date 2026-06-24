@@ -1,0 +1,37 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native generated artifacts
+.kotlin/
+android/.gradle/
+android/build/
+
+# Secrets and local credentials
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# Metro and debug logs
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Local env files
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# OS files
+.DS_Store

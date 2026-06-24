@@ -18,7 +18,10 @@ class DispositivoCreate(DispositivoBase):
 
 
 class DispositivoUpdate(BaseModel):
-    estado: EstadoDispositivo
+    nombre: str | None = Field(None, min_length=3, max_length=100)
+    tipo: str | None = Field(None, min_length=3, max_length=50)
+    ubicacion: str | None = Field(None, min_length=2, max_length=100)
+    estado: EstadoDispositivo | None = None
 
 
 class DispositivoResponse(DispositivoBase):
