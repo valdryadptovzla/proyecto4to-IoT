@@ -4,7 +4,7 @@ Proyecto universitario para monitorear y administrar consumo electrico de dispos
 
 ## Funcionalidades principales
 
-- Login con sesion firmada y roles de usuario.
+- Login con JWT firmado y roles de usuario.
 - Panel de dashboard con consumo total, dispositivos monitoreados y alertas.
 - CRUD de dispositivos para admin.
 - Registro y consulta de consumos electricos.
@@ -16,7 +16,7 @@ Proyecto universitario para monitorear y administrar consumo electrico de dispos
 
 ## Tecnologias
 
-- Backend: FastAPI, Pydantic, PyMongo y MongoDB.
+- Backend: FastAPI, Pydantic, PyMongo, PyJWT, slowapi y MongoDB.
 - Frontend: React Native, Expo, React Navigation, Axios y AsyncStorage.
 - Base de datos: MongoDB local.
 
@@ -24,10 +24,16 @@ Proyecto universitario para monitorear y administrar consumo electrico de dispos
 
 La API crea estos usuarios por defecto al iniciar si no existen:
 
-- Admin: `admin` / `admin`
-- Usuario: `usuario` / `usuario123`
+| Rol | Usuario | Contraseña |
+|---|---|---|
+| Admin | `energiadmin` | `Energia@2026!` |
+| Operador | `operador` | `Monitor#IoT24` |
 
-Estas credenciales son solo para demostracion. En un entorno real deben cambiarse.
+Para restablecer los usuarios a estos valores por defecto se puede ejecutar:
+
+```powershell
+.\.venv\Scripts\python.exe -m backend.scripts.reset_users
+```
 
 ## Roles del sistema
 
@@ -107,11 +113,11 @@ npx expo start --lan --clear
 
 - `MONGO_URL`: URL de MongoDB. Por defecto: `mongodb://localhost:27017`.
 - `MONGO_DB_NAME`: nombre de la base de datos. Por defecto: `gestion_energetica`.
-- `ALLOWED_ORIGINS`: origenes permitidos por CORS. Por defecto: `*`.
+- `ALLOWED_ORIGINS`: origenes CORS permitidos. Por defecto: `http://localhost:8081,http://localhost:19006`.
 - `ALERT_THRESHOLD_WATTS`: umbral de alerta de consumo. Por defecto: `1000`.
 - `EXPO_PUBLIC_API_URL`: URL del backend usada por Expo.
-- `TOKEN_SECRET`: secreto para firmar tokens locales. Cambiar en produccion.
-- `TOKEN_TTL_SECONDS`: duracion de sesion. Por defecto: 8 horas.
+- `TOKEN_SECRET`: secreto para firmar tokens JWT. **Obligatorio cambiar en produccion.**
+- `TOKEN_TTL_SECONDS`: duracion de sesion. Por defecto: 8 horas (28800 segundos).
 
 ## MongoDB
 
@@ -138,16 +144,14 @@ La app ya tiene soporte offline parcial:
 
 Limitacion actual: el modo offline esta enfocado en dispositivos. Si se requiere capturar consumos o alertas manuales offline, se debe extender la cola local para esos tipos de datos.
 
-## Notas de seguridad
+## Seguridad implementada
 
-El proyecto usa PBKDF2 con sal para contrasenas nuevas y mantiene compatibilidad con hashes SHA-256 antiguos. Si un usuario antiguo inicia sesion correctamente, su contrasena se migra automaticamente al formato nuevo.
-
-El login devuelve un token firmado localmente. Las rutas sensibles validan el rol desde ese token:
-
-- Admin puede crear, editar, eliminar, administrar usuarios y consultar auditoria.
-- Usuario solo puede consultar informacion.
-
-Para produccion se recomienda usar un proveedor JWT formal, HTTPS, rotacion de secretos y politica CORS restringida por dominio.
+- Contrasenas hasheadas con PBKDF2-SHA256 (260,000 iteraciones) y sal aleatoria.
+- Autenticacion mediante JWT estandar (PyJWT, algoritmo HS256).
+- Rate limiting en el endpoint de login: maximo 5 intentos por minuto por IP (slowapi).
+- CORS restringido a origenes conocidos (configurable via `.env`).
+- Roles validados desde el token en cada peticion al backend.
+- Sin bypass de autenticacion por headers HTTP.
 
 ## Verificaciones
 
