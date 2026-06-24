@@ -197,7 +197,8 @@ function SettingsTabScreen({ navigation }: { navigation: any }) {
 function MainTabs() {
   const app = useEnergyApp();
   const { width } = useWindowDimensions();
-  const isDesktop = width >= 1024;
+  // Match SidebarTabBar breakpoint: sidebar layout from 768px up
+  const isDesktop = width >= 768;
   const isAdmin = app.user?.rol === 'admin';
 
   const handleGeneratePdf = async () => {
@@ -353,7 +354,7 @@ export default function AppNavigator() {
 
 const styles = StyleSheet.create({
   desktopTabBar: {
-    backgroundColor: '#07111c',
+    backgroundColor: '#030712',
   },
   loadingContainer: {
     alignItems: 'center',
@@ -361,11 +362,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingSafeArea: {
-    backgroundColor: '#050b12',
+    backgroundColor: '#030712',
     flex: 1,
   },
   loadingText: {
-    color: '#cfe4f3',
+    color: '#9ca3af',
     fontSize: 15,
     marginTop: 14,
   },
@@ -373,10 +374,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderTopWidth: 0,
     elevation: 0,
-    height: 74,
+    height: 90,
     position: 'absolute',
   },
   scene: {
-    backgroundColor: '#050b12',
+    backgroundColor: '#030712',
   },
 });
