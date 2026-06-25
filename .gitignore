@@ -23,3 +23,11 @@ dist/
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Node.js
+node_modules/
+
+# Herramientas de IA (carpetas autogeneradas)
+.agents/
+.codex/
+.gemini/
