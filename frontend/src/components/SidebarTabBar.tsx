@@ -99,6 +99,20 @@ export default function SidebarTabBar({ navigation, onLogout, onQuickGeneratePdf
     return (
       <View style={[styles.mobileBar, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
         {state.routes.map((route) => renderRouteButton(route, true))}
+        <TouchableOpacity
+          accessibilityLabel="Cerrar sesion"
+          accessibilityRole="button"
+          activeOpacity={0.7}
+          onPress={onLogout}
+          style={[styles.mobileItem, styles.mobileLogoutItem]}
+        >
+          <View style={[styles.mobileIconBadge, styles.mobileLogoutBadge]}>
+            <Feather name="log-out" size={16} color="#f87171" />
+          </View>
+          <Text numberOfLines={1} style={[styles.mobileLabel, styles.mobileLogoutLabel]}>
+            Salir
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -235,6 +249,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   mobileLabel: { color: '#64748b', fontSize: 10, fontWeight: '700' },
+  mobileLogoutBadge: {
+    backgroundColor: '#2f0a0a',
+    borderColor: '#7f1d1d',
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  mobileLogoutItem: {
+    maxWidth: 66,
+  },
+  mobileLogoutLabel: { color: '#fca5a5' },
   navGroup: { gap: 6 },
   quickActionButton: {
     alignItems: 'center',
