@@ -33,8 +33,10 @@ export default function LoginScreen({
   isSubmitting,
   onSubmit,
 }: LoginScreenProps) {
-  const { width } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const isWide = width >= 900;
+  const isCompact = width < 600;
+  const isShort = height < 720;
   const [fadeAnim] = useState(() => new Animated.Value(0));
   const [password, setPassword] = useState(initialPassword);
   const [showPassword, setShowPassword] = useState(false);
@@ -73,22 +75,43 @@ export default function LoginScreen({
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.safeArea}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
-        <ScrollView contentContainerStyle={[styles.content, isWide && styles.contentWide]} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={[
+            styles.content,
+            isCompact && styles.contentCompact,
+            isWide && styles.contentWide,
+          ]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <Animated.View style={[styles.shell, isWide && styles.shellWide, { opacity: fadeAnim }]}>
-            <View style={styles.card}>
+            {isCompact ? (
+              <View style={[styles.mobileHero, isShort && styles.mobileHeroShort]}>
+                <View style={styles.mobileBrandMark}>
+                  <Feather name="zap" size={22} color="#f8fafc" />
+                </View>
+                <Text style={styles.mobileEyebrow}>Monitoreo energetico IoT</Text>
+                <Text style={styles.mobileTitle}>Panel inteligente</Text>
+                <Text style={styles.mobileSubtitle}>Acceso seguro para monitoreo y administracion.</Text>
+              </View>
+            ) : null}
+
+            <View style={[styles.card, isCompact && styles.cardCompact]}>
               <View style={styles.cardTopRow}>
-                <View style={styles.formMark}>
+                <View style={[styles.formMark, isCompact && styles.formMarkCompact]}>
                   <Feather name="zap" size={22} color="#38bdf8" />
                 </View>
                 <View style={styles.formCopy}>
                   <Text style={styles.cardEyebrow}>Acceso seguro</Text>
-                  <Text style={styles.cardTitle}>Iniciar sesion</Text>
+                  <Text style={[styles.cardTitle, isCompact && styles.cardTitleCompact]}>Iniciar sesion</Text>
                 </View>
               </View>
 
-              <Text style={styles.cardSubtitle}>Ingresa con tu rol para consultar o administrar el monitoreo energetico.</Text>
+              <Text style={[styles.cardSubtitle, isCompact && styles.cardSubtitleCompact]}>
+                Ingresa con tu rol para consultar o administrar el monitoreo energetico.
+              </Text>
 
-              <View style={styles.fieldGroup}>
+              <View style={[styles.fieldGroup, isCompact && styles.fieldGroupCompact]}>
                 <Text style={styles.label}>Usuario</Text>
                 <TextInput
                   autoCapitalize="none"
@@ -97,12 +120,13 @@ export default function LoginScreen({
                   onChangeText={setUsername}
                   placeholder="usuario"
                   placeholderTextColor="#6b879d"
-                  style={styles.input}
+                  returnKeyType="next"
+                  style={[styles.input, isCompact && styles.inputCompact]}
                   value={username}
                 />
               </View>
 
-              <View style={styles.fieldGroup}>
+              <View style={[styles.fieldGroup, isCompact && styles.fieldGroupCompact]}>
                 <Text style={styles.label}>Contrasena</Text>
                 <View style={styles.passwordShell}>
                   <TextInput
@@ -111,16 +135,17 @@ export default function LoginScreen({
                     placeholder="contrasena"
                     placeholderTextColor="#6b879d"
                     secureTextEntry={!showPassword}
-                    style={styles.passwordInput}
+                    returnKeyType="done"
+                    style={[styles.passwordInput, isCompact && styles.passwordInputCompact]}
                     value={password}
                   />
                   <TouchableOpacity onPress={() => setShowPassword((value) => !value)} style={styles.showButton}>
-                    <Text style={styles.showButtonText}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
+                    <Feather name={showPassword ? 'eye-off' : 'eye'} size={17} color="#d1d5db" />
                   </TouchableOpacity>
                 </View>
               </View>
 
-              <View style={styles.optionsRow}>
+              <View style={[styles.optionsRow, isCompact && styles.optionsRowCompact]}>
                 <TouchableOpacity onPress={() => setRemember((value) => !value)} style={styles.rememberRow}>
                   <View style={[styles.checkbox, remember && styles.checkboxChecked]}>
                     {remember ? <Feather name="check" size={13} color="#f8fafc" /> : null}
@@ -133,7 +158,7 @@ export default function LoginScreen({
               <TouchableOpacity
                 disabled={isSubmitting}
                 onPress={handleSubmit}
-                style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+                style={[styles.submitButton, isCompact && styles.submitButtonCompact, isSubmitting && styles.submitButtonDisabled]}
               >
                 <Text style={styles.submitLabel}>{isSubmitting ? 'Validando...' : 'Entrar al dashboard'}</Text>
               </TouchableOpacity>
@@ -141,7 +166,7 @@ export default function LoginScreen({
               <Text style={styles.securityNote}>La API se configura internamente para pruebas locales y futura APK.</Text>
             </View>
 
-            <View style={styles.hero}>
+            {!isCompact ? <View style={styles.hero}>
               <View style={styles.brandMark}>
                 <Feather name="zap" size={28} color="#f8fafc" />
               </View>
@@ -168,7 +193,7 @@ export default function LoginScreen({
                   <Text style={styles.signalLabel}>Analitica</Text>
                 </View>
               </View>
-            </View>
+            </View> : null}
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -197,9 +222,15 @@ const styles = StyleSheet.create({
     padding: 28,
     width: '100%',
   },
+  cardCompact: {
+    borderRadius: 18,
+    padding: 18,
+  },
   cardEyebrow: { color: '#38bdf8', fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.8 },
   cardSubtitle: { color: '#6b7280', fontSize: 14, lineHeight: 20, marginTop: 16 },
-  cardTitle: { color: '#f9fafb', fontSize: 28, fontWeight: '800', marginTop: 3, letterSpacing: -0.5 },
+  cardSubtitleCompact: { fontSize: 13, lineHeight: 19, marginTop: 10 },
+  cardTitle: { color: '#f9fafb', fontSize: 28, fontWeight: '800', marginTop: 3 },
+  cardTitleCompact: { fontSize: 24 },
   cardTopRow: { alignItems: 'center', flexDirection: 'row', gap: 14 },
   checkText: { color: '#f8fafc', fontSize: 9, fontWeight: '900' },
   checkbox: {
@@ -215,9 +246,11 @@ const styles = StyleSheet.create({
   },
   checkboxChecked: { backgroundColor: '#16a34a', borderColor: '#22c55e' },
   content: { flexGrow: 1, justifyContent: 'center', padding: 18 },
+  contentCompact: { justifyContent: 'flex-start', padding: 16, paddingBottom: 28 },
   contentWide: { alignItems: 'center', justifyContent: 'center' },
   eyebrow: { color: '#38bdf8', fontSize: 11, fontWeight: '800', marginTop: 22, textTransform: 'uppercase', letterSpacing: 0.8 },
   fieldGroup: { marginTop: 20 },
+  fieldGroupCompact: { marginTop: 15 },
   formCopy: { flex: 1 },
   formMark: {
     alignItems: 'center',
@@ -229,6 +262,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 52,
   },
+  formMarkCompact: { borderRadius: 13, height: 46, width: 46 },
   formMarkText: { color: '#38bdf8', fontSize: 15, fontWeight: '900' },
   hero: { flex: 1, gap: 2, maxWidth: 520 },
   input: {
@@ -242,10 +276,28 @@ const styles = StyleSheet.create({
     minHeight: 54,
     paddingHorizontal: 15,
   },
+  inputCompact: { minHeight: 50 },
   keyboard: { flex: 1 },
   label: { color: '#9ca3af', fontSize: 13, fontWeight: '700' },
+  mobileBrandMark: {
+    alignItems: 'center',
+    backgroundColor: '#0284c7',
+    borderColor: 'rgba(56,189,248,0.35)',
+    borderRadius: 17,
+    borderWidth: 1,
+    height: 54,
+    justifyContent: 'center',
+    width: 54,
+  },
+  mobileEyebrow: { color: '#38bdf8', fontSize: 11, fontWeight: '800', marginTop: 14, textTransform: 'uppercase' },
+  mobileHero: { alignItems: 'center', marginBottom: 18, marginTop: 4 },
+  mobileHeroShort: { marginBottom: 12 },
+  mobileSubtitle: { color: '#94a3b8', fontSize: 13, lineHeight: 19, marginTop: 6, textAlign: 'center' },
+  mobileTitle: { color: '#f9fafb', fontSize: 29, fontWeight: '900', marginTop: 5, textAlign: 'center' },
   optionsRow: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 18 },
+  optionsRowCompact: { alignItems: 'flex-start', gap: 12 },
   passwordInput: { color: '#f9fafb', flex: 1, fontSize: 16, minHeight: 54, paddingHorizontal: 15 },
+  passwordInputCompact: { minHeight: 50 },
   passwordShell: {
     alignItems: 'center',
     backgroundColor: '#0f172a',
@@ -271,9 +323,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 8,
     minHeight: 38,
+    minWidth: 42,
     paddingHorizontal: 13,
   },
-  showButtonText: { color: '#d1d5db', fontSize: 12, fontWeight: '700' },
   signalCard: {
     backgroundColor: '#111827',
     borderColor: '#1f2937',
@@ -295,8 +347,9 @@ const styles = StyleSheet.create({
     marginTop: 24,
     minHeight: 56,
   },
+  submitButtonCompact: { marginTop: 20, minHeight: 52 },
   submitButtonDisabled: { opacity: 0.5 },
   submitLabel: { color: '#f8fafc', fontSize: 15, fontWeight: '700' },
   subtitle: { color: '#6b7280', fontSize: 16, lineHeight: 24, marginTop: 14, maxWidth: 490 },
-  title: { color: '#f9fafb', fontSize: 44, fontWeight: '800', lineHeight: 50, marginTop: 9, letterSpacing: -1.5 },
+  title: { color: '#f9fafb', fontSize: 44, fontWeight: '800', lineHeight: 50, marginTop: 9 },
 });

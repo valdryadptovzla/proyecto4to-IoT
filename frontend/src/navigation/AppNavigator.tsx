@@ -29,6 +29,12 @@ async function openAdminReport(params: {
   return generateAdminReport({ ...params, logoAssetModule: require('../../assets/icon.png') });
 }
 
+function getPdfReadyMessage() {
+  return Platform.OS === 'web'
+    ? 'Se abrio la vista de impresion del navegador.'
+    : 'Se genero el archivo y se abrio el menu para compartir o guardar.';
+}
+
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -58,7 +64,7 @@ function DashboardTabScreen({ navigation }: { navigation: any }) {
         devices: app.dispositivos,
         user: app.user,
       });
-      Alert.alert('PDF listo', 'Se abrio la vista de impresion del navegador.');
+      Alert.alert('PDF listo', getPdfReadyMessage());
       await app.registerAuditEvent({
         accion: 'pdf_generado',
         descripcion: 'El administrador genero un reporte PDF desde el dashboard.',
@@ -211,7 +217,7 @@ function MainTabs() {
         devices: app.dispositivos,
         user: app.user,
       });
-      Alert.alert('PDF listo', 'Se abrio la vista de impresion del navegador.');
+      Alert.alert('PDF listo', getPdfReadyMessage());
       await app.registerAuditEvent({
         accion: 'pdf_generado',
         descripcion: 'El administrador genero un reporte PDF desde la navegacion.',

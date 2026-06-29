@@ -448,20 +448,27 @@ export async function generateReportPDF(
     const cacheDir: string = (FileSystem as any).cacheDirectory ?? '';
     const destUri = `${cacheDir}${fileName}`;
 
+    let finalUri = uri;
+
     try {
       await FileSystem.copyAsync({ from: uri, to: destUri });
+      finalUri = destUri;
     } catch (copyErr) {
       console.warn('[pdfService] copyAsync failed, using original uri', copyErr);
     }
 
-    const finalUri = destUri;
-
     if (options?.preview) {
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(finalUri, { mimeType: 'application/pdf', UTI: '.pdf' });
+        await Sharing.shareAsync(finalUri, {
+          dialogTitle: 'Compartir reporte PDF',
+          mimeType: 'application/pdf',
+          UTI: 'com.adobe.pdf',
+        });
       } else if (Platform.OS === 'web') {
         // @ts-ignore
         window.open(finalUri, '_blank');
+      } else {
+        throw new Error('Este dispositivo no tiene disponible la opcion de compartir archivos.');
       }
     }
 
